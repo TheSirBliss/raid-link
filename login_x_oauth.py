@@ -2,33 +2,51 @@ from flask import Flask, redirect, request
 import requests
 import json
 import os
+import base64
+import hashlib
+import secrets
 from urllib.parse import urlencode
 
 app = Flask(__name__)
 app.secret_key = "supersegretodigitale"
 
-# === CONFIGURA CON LE TUE CHIAVI API X ===
 CLIENT_ID = "77anZvMmYRLFfTjCo2beKuYta"
 CLIENT_SECRET = "peLjGGLL54cczAYnVxHJ3RE78NVeyf0VDRlQ1f0fIyQbzZm7yD"
 REDIRECT_URI = "https://raid-link.onrender.com/callback"
 SCOPES = "tweet.read users.read like.read offline.access"
 
+# PKCE utils
+def generate_pkce_pair():
+    code_verifier = secrets.token_urlsafe(64)
+    code_challenge = base64.urlsafe_b64encode(
+        hashlib.sha256(code_verifier.encode()).digest()
+    ).rstrip(b'=').decode('utf-8')
+    return code_verifier, code_challenge
+
+# In memoria solo per demo
+code_verifier_global = ""
+
 @app.route("/")
 def index():
+    global code_verifier_global
+    code_verifier, code_challenge = generate_pkce_pair()
+    code_verifier_global = code_verifier
+
     params = {
         "response_type": "code",
         "client_id": CLIENT_ID,
         "redirect_uri": REDIRECT_URI,
         "scope": SCOPES,
         "state": "securestate",
-        "code_challenge": "challenge",
-        "code_challenge_method": "plain"
+        "code_challenge": code_challenge,
+        "code_challenge_method": "S256"
     }
     auth_url = "https://twitter.com/i/oauth2/authorize?" + urlencode(params)
     return f"<h2>Collega il tuo profilo X</h2><a href='{auth_url}'>Autorizza via Twitter</a>"
 
 @app.route("/callback")
 def callback():
+    global code_verifier_global
     code = request.args.get("code")
     if not code:
         return "Errore: nessun codice ricevuto."
@@ -38,7 +56,7 @@ def callback():
         "grant_type": "authorization_code",
         "client_id": CLIENT_ID,
         "redirect_uri": REDIRECT_URI,
-        "code_verifier": "challenge"
+        "code_verifier": code_verifier_global
     }
     headers = {
         "Content-Type": "application/x-www-form-urlencoded"
