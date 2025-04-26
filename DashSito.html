@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Bliss - Prodotti Digitali</title>
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/babel-standalone@6.26.0/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const products = [
+      { id: 1, name: "Sito Web Portfolio", category: "Siti Web", price: 299, description: "Un sito elegante per mostrare i tuoi lavori.", image: "https://via.placeholder.com/300x200?text=Sito+Portfolio" },
+      { id: 2, name: "App Mobile Fitness", category: "App", price: 499, description: "Un'app per il monitoraggio del fitness.", image: "https://via.placeholder.com/300x200?text=App+Fitness" },
+      { id: 3, name: "Bot Telegram AI", category: "Bot", price: 199, description: "Un bot intelligente per automatizzare le chat.", image: "https://via.placeholder.com/300x200?text=Bot+Telegram" },
+      { id: 4, name: "Sito E-commerce", category: "Siti Web", price: 799, description: "Un negozio online completo.", image: "https://via.placeholder.com/300x200?text=E-commerce" },
+    ];
+
+    const getAISuggestions = (category) => {
+      return products.filter(product => product.category === category).slice(0, 2);
+    };
+
+    const ProductCard = ({ product }) => {
+      return (
+        <div className="bg-white rounded-lg shadow-lg p-4 hover:shadow-xl transition">
+          <img src={product.image} alt={product.name} className="w-full h-48 object-cover rounded-md" />
+          <h3 className="text-xl font-bold mt-2">{product.name}</h3>
+          <p className="text-gray-600">{product.description}</p>
+          <p className="text-lg font-semibold text-blue-600 mt-2">€{product.price}</p>
+          <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            Aggiungi al Carrello
+          </button>
+        </div>
+      );
+    };
+
+    const AISuggestion = () => {
+      const suggestions = getAISuggestions("Siti Web"); // Simulazione AI basata su categoria
+      return (
+        <div className="my-8">
+          <h2 className="text-2xl font-bold text-center">Suggerimenti AI per Te</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            {suggestions.map(product => <ProductCard key={product.id} product={product} />)}
+          </div>
+        </div>
+      );
+    };
+
+    const App = () => {
+      return (
+        <div className="min-h-screen bg-gray-100">
+          {/* Navbar */}
+          <nav className="bg-blue-600 text-white p-4">
+            <div className="container mx-auto flex justify-between items-center">
+              <h1 className="text-2xl font-bold">Digital Bliss</h1>
+              <div>
+                <a href="#products" className="mr-4 hover:underline">Prodotti</a>
+                <a href="#cart" className="hover:underline">Carrello</a>
+              </div>
+            </div>
+          </nav>
+
+          {/* Hero Section */}
+          <section className="bg-blue-500 text-white py-20 text-center">
+            <div className="container mx-auto">
+              <h2 className="text-4xl font-bold">Scopri i Nostri Prodotti Digitali</h2>
+              <p className="mt-4 text-lg">Siti, app e bot con l'intelligenza artificiale al tuo servizio!</p>
+              <a href="#products" className="mt-6 inline-block bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-200">
+                Esplora Ora
+              </a>
+            </div>
+          </section>
+
+          {/* AI Suggestions */}
+          <section className="container mx-auto py-10">
+            <AISuggestion />
+          </section>
+
+          {/* Products Section */}
+          <section id="products" className="container mx-auto py-10">
+            <h2 className="text-2xl font-bold text-center">I Nostri Prodotti</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+              {products.map(product => <ProductCard key={product.id} product={product} />)}
+            </div>
+          </section>
+
+          {/* Footer */}
+          <footer className="bg-blue-600 text-white p-4 text-center">
+            <p>&copy; 2025 Digital Bliss. Tutti i diritti riservati.</p>
+          </footer>
+        </div>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
